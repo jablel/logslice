@@ -57,6 +57,19 @@ func (w *Writer) WriteLine(lineNum int, line string) error {
 	return err
 }
 
+// WriteLines writes multiple log lines, stopping on the first error.
+// It returns the number of lines successfully written and any error encountered.
+func (w *Writer) WriteLines(lines map[int]string) (int, error) {
+	written := 0
+	for lineNum, line := range lines {
+		if err := w.WriteLine(lineNum, line); err != nil {
+			return written, fmt.Errorf("writing line %d: %w", lineNum, err)
+		}
+		written++
+	}
+	return written, nil
+}
+
 // Flush flushes any buffered output.
 func (w *Writer) Flush() error {
 	return w.bw.Flush()
