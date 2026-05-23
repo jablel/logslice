@@ -45,3 +45,17 @@ func TestIntegration_FilterByField(t *testing.T) {
 		t.Errorf("expected 1 error line, got %d", len(errors))
 	}
 }
+
+// TestIntegration_EmptyLine verifies that extracting a field from an empty
+// string returns an empty result without panicking.
+func TestIntegration_EmptyLine(t *testing.T) {
+	ex, err := fieldextractor.New("level", fieldextractor.FormatUnknown)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	got := ex.Extract("")
+	if got != "" {
+		t.Errorf("expected empty string for empty input, got %q", got)
+	}
+}
