@@ -72,3 +72,29 @@ func TestIntegration_ReuseAfterReset(t *testing.T) {
 		t.Errorf("unexpected lines after reset: %v", got)
 	}
 }
+
+// TestIntegration_FewerLinesThanLimit verifies that when fewer lines are fed
+// than the requested limit, all fed lines are returned without padding.
+func TestIntegration_FewerLinesThanLimit(t *testing.T) {
+	for _, mode := range []string{"head", "tail"} {
+		t.Run(mode, func(t *testing.T) {
+			r, err := headtailreader.New(mode, 50)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, l := range generateLines(10) {
+				r.Feed(l)
+			}
+			got := r.Lines()
+			if len(got) != 10 {
+				t.Fatalf("want 10 lines, got %d", len(got))
+			}
+			if got[0] != "line-0001" {
+				t.Errorf("first line: want line-0001, got %q", got[0])
+			}
+			if got[9] != "line-0010" {
+				t.Errorf("last line: want line-0010, got %q", got[9])
+			}
+		})
+	}
+}
